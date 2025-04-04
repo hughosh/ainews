@@ -6,7 +6,6 @@ from typing import List, Dict, Any
 def get_news_api_key() -> str:
     """
     Retrieves the NewsAPI key from the environment variable.
-    Raises an error if the key is not found.
     """
     key = os.environ.get('NEWS_API_KEY')
     if not key:
@@ -15,18 +14,7 @@ def get_news_api_key() -> str:
 
 def fetch_top_headlines(sources: List[str], hours: int = 24) -> List[Dict[str, Any]]:
     """
-    Fetches top headlines from the specified sources that were published within the past `hours` hours.
-    
-    Parameters:
-      sources (List[str]): List of news source identifiers (e.g. "cnn", "fox-news", "the-new-york-times").
-      hours (int): Timeframe in hours to filter articles (default is 24 hours).
-    
-    Returns:
-      List[Dict[str, Any]]: A list of dictionaries, each representing an article with its title,
-                            source, publication date, and description.
-    
-    Raises:
-      RuntimeError: If there is an error in the API request or the API rate limit is exceeded.
+    Fetches top headlines from the specified sources published within the past `hours` hours.
     """
     api_key = get_news_api_key()
     url = "https://newsapi.org/v2/top-headlines"
@@ -50,6 +38,7 @@ def fetch_top_headlines(sources: List[str], hours: int = 24) -> List[Dict[str, A
         raise RuntimeError(f"Error in API response: {data.get('message', 'Unknown error')}")
     
     articles = data.get("articles", [])
+    
     now = datetime.datetime.utcnow()
     cutoff_time = now - datetime.timedelta(hours=hours)
     
@@ -59,29 +48,40 @@ def fetch_top_headlines(sources: List[str], hours: int = 24) -> List[Dict[str, A
         try:
             published_at = datetime.datetime.strptime(published_at_str, "%Y-%m-%dT%H:%M:%SZ")
         except ValueError:
-            continue  # Skip articles with unexpected date format
+            continue
         
         if published_at >= cutoff_time:
-            filtered_articles.append({
-                "title": article.get("title", "No Title"),
-                "source": article.get("source", {}).get("name", "Unknown Source"),
-                "publishedAt": published_at.strftime("%Y-%m-%d %H:%M:%S"),
-                "description": article.get("description", "No Description")
-            })
+            filtered_articles.append(article)
     
     return filtered_articles
 
 def print_articles(articles: List[Dict[str, Any]]) -> None:
     """
-    Prints the list of articles in a formatted manner.
-    
-    Parameters:
-      articles (List[Dict[str, Any]]): The list of articles to print.
+    Prints articles with enriched metadata if available.
     """
+    if not articles:
+        print("No articles found for the specified criteria.")
+        return
+    
     for article in articles:
-        print(f"Title: {article.get('title')}")
-        print(f"Source: {article.get('source')}")
-        print(f"Publication Date: {article.get('publishedAt')}")
-        print(f"Description: {article.get('description')}")
+        title = article.get("title", "No Title")
+        # Try to get source from two possible locations.
+        source = (article.get("source", {}).get("name") if isinstance(article.get("source"), dict)
+                  else article.get("source", "Unknown Source"))
+        # Use 'timestamp' if available; otherwise fall back to 'publishedAt'
+        timestamp = article.get("timestamp", article.get("publishedAt", ""))
+        topic = article.get("topic", "")
+        keywords = article.get("keywords", [])
+        description = article.get("description", "")
+        
+        print(f"Title: {title}")
+        print(f"Source: {source}")
+        print(f"Timestamp: {timestamp}")
+        if topic:
+            print(f"Topic: {topic}")
+        if keywords:
+            print(f"Keywords: {', '.join(keywords)}")
+        if description:
+            print(f"Description: {description}")
         print("-" * 80)
 
