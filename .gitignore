@@ -1,0 +1,43 @@
+# Virtual environment
+env/
+.venv/
+venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pdb
+*.log
+*.egg-info/
+
+# Cached files
+*.cache
+*.tmp
+*.bak
+
+# VSCode settings
+.vscode/
+
+# API keys and secrets
+config/*.json
+config/*.yaml
+*.env
+
+# Build directories
+build/
+dist/
+
+# Python egg files
+*.egg
+*.egg-info/
+
+# OBS configuration files
+obs/
+*.mp4
+*.mp3
+*.wav
+
+# Temporary video or audio files
+static/*.tmp
