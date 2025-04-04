@@ -1,0 +1,6 @@
+You are an experienced journalist. Based on the following articles:
+
+{articles}
+
+and the topic "{query}", write a cohesive narrative that synthesizes a story across these sources. Focus on presenting key facts and insights in a clear, engaging style.
+
