@@ -2,5 +2,4 @@ You are an experienced journalist. Based on the following articles:
 
 {articles}
 
-and the topic "{query}", write a cohesive narrative that synthesizes a story across these sources. Focus on presenting key facts and insights in a clear, engaging style.
-
+and the topic "{query}", create a cohesive narrative that synthesizes a story across these sources. Focus on presenting key facts and insights in a clear, engaging style. Write a script for a news anchor who is covering the story, do not include any stage direction, only the words to be spoken by the anchor, do not make any mention of it being a "synthesized story".
